@@ -1,0 +1,17 @@
+/* Global styles and Tailwind layers for CreatorKit UI. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: radial-gradient(circle at top, #fef3c7 0%, #f6f3ee 45%, #eef2ff 100%);
+  color: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
