@@ -21,9 +21,10 @@ const statusTone: Record<TaskStatus, 'emerald' | 'amber' | 'slate'> = {
 
 export interface TaskItemRowProps {
   task: CampaignTask;
+  onEditChange?: (isEditing: boolean) => void;
 }
 
-export function TaskItemRow({ task }: TaskItemRowProps) {
+export function TaskItemRow({ task, onEditChange }: TaskItemRowProps) {
   const router = useRouter();
   const { pushToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
@@ -42,6 +43,7 @@ export function TaskItemRow({ task }: TaskItemRowProps) {
         dueDate: dueDate || null,
       });
       setIsEditing(false);
+      onEditChange?.(false);
       pushToast('Task updated.', 'success');
       router.refresh();
     } catch (error) {
@@ -67,19 +69,20 @@ export function TaskItemRow({ task }: TaskItemRowProps) {
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={`flex flex-wrap items-center justify-between gap-3 ${isEditing ? 'w-full' : ''}`}>
         {isEditing ? (
-          <div className="flex-1 space-y-2">
+          <div className="w-full space-y-2">
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
             />
-            <div className="grid gap-2 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
               <select
                 value={status}
                 onChange={(event) => setStatus(event.target.value as TaskStatus)}
-                className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                aria-label="Task status"
               >
                 <option value="todo">To do</option>
                 <option value="in_progress">In progress</option>
@@ -90,7 +93,7 @@ export function TaskItemRow({ task }: TaskItemRowProps) {
                 type="date"
                 value={dueDate}
                 onChange={(event) => setDueDate(event.target.value)}
-                className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
               />
             </div>
           </div>
@@ -105,9 +108,12 @@ export function TaskItemRow({ task }: TaskItemRowProps) {
           {!isEditing ? <StatusPill label={status.replace('_', ' ')} tone={statusTone[status]} /> : null}
           {isEditing ? (
             <>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(false);
+                onEditChange?.(false);
+              }}
                 className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700"
               >
                 Cancel
@@ -125,7 +131,10 @@ export function TaskItemRow({ task }: TaskItemRowProps) {
             <>
               <button
                 type="button"
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setIsEditing(true);
+                  onEditChange?.(true);
+                }}
                 className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700"
               >
                 Edit

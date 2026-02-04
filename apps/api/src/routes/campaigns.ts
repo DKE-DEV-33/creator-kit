@@ -18,11 +18,10 @@ import {
   removeCampaignTask,
   updateCampaignContent,
   updateCampaignTask,
-} from '../data/mock.js';
-import { randomUUID } from 'node:crypto';
+} from '../data/db.js';
 
 export function registerCampaignRoutes(server: FastifyInstance): void {
-  server.get('/campaigns', async () => ({ campaigns: listCampaigns() }));
+  server.get('/campaigns', async () => ({ campaigns: await listCampaigns() }));
 
   server.post<{ Body: { name?: string; startDate?: string | null; endDate?: string | null } }>(
     '/campaigns',
@@ -33,7 +32,7 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
         return reply.code(400).send({ error: 'Campaign name is required' });
       }
 
-      const campaign = addCampaign({
+      const campaign = await addCampaign({
         name: name.trim(),
         startDate: startDate ?? null,
         endDate: endDate ?? null,
@@ -44,7 +43,7 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
   );
 
   server.get<{ Params: { id: string } }>('/campaigns/:id', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
@@ -54,30 +53,30 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
   });
 
   server.get<{ Params: { id: string } }>('/campaigns/:id/content', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
     }
 
-    return { content: getCampaignContent(request.params.id) };
+    return { content: await getCampaignContent(request.params.id) };
   });
 
   server.get<{ Params: { id: string } }>('/campaigns/:id/tasks', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
     }
 
-    return { tasks: getCampaignTasks(request.params.id) };
+    return { tasks: await getCampaignTasks(request.params.id) };
   });
 
   server.post<{
     Params: { id: string };
     Body: { title?: string; status?: 'todo' | 'in_progress' | 'needs_review' | 'done'; dueDate?: string | null };
   }>('/campaigns/:id/tasks', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
@@ -89,7 +88,7 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
       return reply.code(400).send({ error: 'Task title is required' });
     }
 
-    const task = addCampaignTask({
+    const task = await addCampaignTask({
       campaignId: request.params.id,
       title: title.trim(),
       status: status ?? 'todo',
@@ -107,13 +106,13 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
     Params: { id: string; taskId: string };
     Body: { title?: string; status?: 'todo' | 'in_progress' | 'needs_review' | 'done'; dueDate?: string | null };
   }>('/campaigns/:id/tasks/:taskId', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
     }
 
-    const updated = updateCampaignTask(request.params.id, request.params.taskId, request.body ?? {});
+    const updated = await updateCampaignTask(request.params.id, request.params.taskId, request.body ?? {});
 
     if (!updated) {
       return reply.code(404).send({ error: 'Task not found' });
@@ -125,13 +124,13 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
   server.delete<{ Params: { id: string; taskId: string } }>(
     '/campaigns/:id/tasks/:taskId',
     async (request, reply) => {
-      const campaign = getCampaign(request.params.id);
+      const campaign = await getCampaign(request.params.id);
 
       if (!campaign) {
         return reply.code(404).send({ error: 'Campaign not found' });
       }
 
-      const removed = removeCampaignTask(request.params.id, request.params.taskId);
+      const removed = await removeCampaignTask(request.params.id, request.params.taskId);
 
       if (!removed) {
         return reply.code(404).send({ error: 'Task not found' });
@@ -145,7 +144,7 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
     Params: { id: string };
     Body: { title: string; platform: 'youtube' | 'tiktok' | 'instagram'; scheduledAt?: string | null };
   }>('/campaigns/:id/content', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
@@ -157,29 +156,27 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
       return reply.code(400).send({ error: 'Title and platform are required' });
     }
 
-    const item = {
-      id: randomUUID(),
+    const item = await addCampaignContent({
       campaignId: request.params.id,
       title,
       platform,
-      status: scheduledAt ? 'scheduled' : 'draft',
       scheduledAt: scheduledAt ?? null,
-    };
+    });
 
-    return reply.code(201).send({ content: addCampaignContent(item) });
+    return reply.code(201).send({ content: item });
   });
 
   server.put<{
     Params: { id: string; contentId: string };
     Body: { title?: string; platform?: 'youtube' | 'tiktok' | 'instagram'; scheduledAt?: string | null };
   }>('/campaigns/:id/content/:contentId', async (request, reply) => {
-    const campaign = getCampaign(request.params.id);
+    const campaign = await getCampaign(request.params.id);
 
     if (!campaign) {
       return reply.code(404).send({ error: 'Campaign not found' });
     }
 
-    const updated = updateCampaignContent(request.params.id, request.params.contentId, request.body ?? {});
+    const updated = await updateCampaignContent(request.params.id, request.params.contentId, request.body ?? {});
 
     if (!updated) {
       return reply.code(404).send({ error: 'Content item not found' });
@@ -197,7 +194,7 @@ export function registerCampaignRoutes(server: FastifyInstance): void {
         return reply.code(404).send({ error: 'Campaign not found' });
       }
 
-      const removed = removeCampaignContent(request.params.id, request.params.contentId);
+      const removed = await removeCampaignContent(request.params.id, request.params.contentId);
 
       if (!removed) {
         return reply.code(404).send({ error: 'Content item not found' });

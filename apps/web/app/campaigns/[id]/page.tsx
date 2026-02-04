@@ -3,6 +3,7 @@
  *
  * Shows brief, tasks, content plan, and performance highlights.
  */
+export const dynamic = 'force-dynamic';
 import { AppShell } from '../../../components/shell';
 import { SectionHeader } from '../../../components/section-header';
 import { StatusPill } from '../../../components/status-pill';

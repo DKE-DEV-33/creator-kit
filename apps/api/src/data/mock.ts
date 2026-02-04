@@ -413,6 +413,22 @@ export function listCreators(): CreatorProfile[] {
 }
 
 /**
+ * Append a new creator to the in-memory store.
+ */
+export function addCreator(data: { name: string; email: string | null }): CreatorProfile {
+  const creator: CreatorProfile = {
+    id: randomUUID(),
+    name: data.name,
+    email: data.email ?? '',
+    avatarUrl: null,
+    platforms: [],
+  };
+
+  creators.push(creator);
+  return creator;
+}
+
+/**
  * Return a single creator by ID, if it exists.
  */
 export function getCreator(id: string): CreatorProfile | null {

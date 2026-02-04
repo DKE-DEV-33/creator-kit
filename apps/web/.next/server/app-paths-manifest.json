@@ -1,7 +1,9 @@
 {
-  "/page": "app/page.js",
   "/creators/page": "app/creators/page.js",
+  "/campaigns/page": "app/campaigns/page.js",
   "/campaigns/[id]/page": "app/campaigns/[id]/page.js",
-  "/creators/[id]/page": "app/creators/[id]/page.js",
-  "/campaigns/page": "app/campaigns/page.js"
+  "/integrations/page": "app/integrations/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/creators/[id]/page": "app/creators/[id]/page.js"
 }

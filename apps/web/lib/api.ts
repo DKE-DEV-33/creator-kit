@@ -77,6 +77,20 @@ export async function getCreators(): Promise<CreatorProfile[]> {
 }
 
 /**
+ * Create a new creator.
+ */
+export async function createCreator(payload: { name: string; email?: string | null }): Promise<CreatorDetail> {
+  const data = await fetchJson<{ creator: CreatorDetail }>('/creators', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return data.creator;
+}
+
+/**
  * Fetch a creator by ID.
  */
 export async function getCreator(id: string): Promise<CreatorDetail> {

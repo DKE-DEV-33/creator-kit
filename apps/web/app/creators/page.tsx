@@ -3,8 +3,10 @@
  *
  * Highlights creator profiles, platform focus, and current priorities.
  */
+export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { AppShell } from '../../components/shell';
+import { CreatorForm } from '../../components/creator-form';
 import { SectionHeader } from '../../components/section-header';
 import { getCreators } from '../../lib/api';
 
@@ -13,7 +15,10 @@ export default async function CreatorsPage() {
   return (
     <AppShell>
       <section className="rounded-3xl border border-white/60 bg-white/80 p-6 shadow-glow backdrop-blur">
-        <SectionHeader title="Creators" subtitle="Roster" actionLabel="Add creator" />
+        <SectionHeader title="Creators" subtitle="Roster" actionLabel="Add creator" actionHref="#creator-form" />
+        <div className="mt-6">
+          <CreatorForm />
+        </div>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {creators.map((creator) => (
             <article key={creator.id} className="rounded-2xl border border-slate-200 bg-white p-5">
