@@ -6,6 +6,7 @@
 import type { Metadata } from 'next';
 import { DM_Serif_Display, Space_Grotesk } from 'next/font/google';
 import './globals.css';
+import { ToastProvider } from '../components/toast';
 
 const displayFont = DM_Serif_Display({
   weight: '400',
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${displayFont.variable} ${uiFont.variable}`}>
       <body className="font-sans">
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

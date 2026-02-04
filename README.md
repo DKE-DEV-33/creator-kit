@@ -93,11 +93,11 @@ The system is structured so that:
 - PostgreSQL
 - npm or pnpm
 
+![License](https://img.shields.io/badge/license-MIT-green)
+
 ### Setup
 
 ```bash
 git clone https://github.com/your-username/creator-kit.git
 cd creator-kit
 npm install
-
-![License](https://img.shields.io/badge/license-MIT-green)
