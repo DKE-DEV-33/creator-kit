@@ -6,15 +6,15 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { MockActionButton } from './mock-action-button';
+import { SyncAnalyticsButton } from './sync-analytics-button';
+import { getUserProfile, getWorkspaceStats } from '../lib/api';
 
 export interface AppShellProps {
   children: ReactNode;
 }
 
-const demoUser = {
-  name: process.env.NEXT_PUBLIC_DEMO_USER_NAME ?? 'Jordan Lee',
-  team: process.env.NEXT_PUBLIC_DEMO_TEAM ?? 'Pulse Creative',
-  initials: process.env.NEXT_PUBLIC_DEMO_USER_INITIALS ?? 'JL',
+const demoTeam = {
+  name: process.env.NEXT_PUBLIC_DEMO_TEAM ?? 'Pulse Creative',
 };
 
 const navItems = [
@@ -25,7 +25,17 @@ const navItems = [
   { label: 'Settings', href: '/settings' },
 ];
 
-export function AppShell({ children }: AppShellProps) {
+export async function AppShell({ children }: AppShellProps) {
+  const stats = await getWorkspaceStats().catch(() => ({ liveCampaigns: 0, creators: 0 }));
+  const user = await getUserProfile().catch(() => ({
+    name: 'Jordan Lee',
+    email: 'demo@pulsecreative.com',
+    role: 'Account Owner',
+    timezone: 'America/Los_Angeles',
+    teamId: '11111111-1111-1111-1111-111111111111',
+    id: '22222222-2222-2222-2222-222222222222',
+  }));
+
   return (
     <div className="min-h-screen px-6 py-8">
       <div className="mx-auto grid max-w-6xl items-start gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
@@ -69,19 +79,26 @@ export function AppShell({ children }: AppShellProps) {
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Welcome back</p>
               <h1 className="mt-2 font-display text-3xl text-ink">Pulse Creative Ops</h1>
-              <p className="mt-2 text-sm text-slate-500">Agency workspace · 2 live campaigns · 8 creators</p>
+              <p className="mt-2 text-sm text-slate-500">
+                Agency workspace · {stats.liveCampaigns} live campaigns · {stats.creators} creators
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 md:flex">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-forest text-white">
-                  {demoUser.initials}
+                  {user.name
+                    .split(' ')
+                    .map((part) => part[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-ink">{demoUser.name}</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">{demoUser.team}</p>
+                  <p className="text-xs font-semibold text-ink">{user.name}</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400">{demoTeam.name}</p>
                 </div>
               </div>
-              <MockActionButton label="Sync Analytics" message="Analytics sync started." />
+              <SyncAnalyticsButton />
               <Link
                 href="/campaigns#campaign-form"
                 className="rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-ink/20"

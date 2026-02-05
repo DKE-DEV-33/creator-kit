@@ -21,6 +21,17 @@ const statusTone: Record<string, 'emerald' | 'amber' | 'slate'> = {
   archived: 'slate',
 };
 
+function formatDate(value: string | null): string {
+  if (!value) {
+    return 'TBD';
+  }
+  return new Date(value).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export default async function CampaignDetailPage({ params }: { params: { id: string } }) {
   const campaign = await getCampaign(params.id).catch(() => null);
   const analytics = await getCampaignAnalytics(params.id).catch(() => null);
@@ -48,8 +59,7 @@ export default async function CampaignDetailPage({ params }: { params: { id: str
             <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Campaign</p>
             <h2 className="mt-2 font-display text-3xl text-ink">{campaign.name}</h2>
             <p className="mt-2 text-sm text-slate-500">
-              {campaign.startDate ? `Starts ${campaign.startDate}` : 'Start date TBD'} ·{' '}
-              {campaign.endDate ? `Ends ${campaign.endDate}` : 'End date TBD'}
+              Starts {formatDate(campaign.startDate)} · Ends {formatDate(campaign.endDate)}
             </p>
           </div>
           <StatusPill label={campaign.status} tone={statusTone[campaign.status]} />

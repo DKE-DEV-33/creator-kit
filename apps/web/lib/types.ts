@@ -50,6 +50,7 @@ export interface CreatorProfile {
   platforms: Array<{
     platform: Platform;
     handle: string;
+    externalId?: string;
   }>;
 }
 
@@ -103,9 +104,11 @@ export interface ContentItem {
 export interface Integration {
   id: string;
   platform: Platform;
-  status: 'connected' | 'disconnected' | 'error';
+  status: 'connected' | 'disconnected' | 'pending' | 'error';
   detail: string;
-  action: string;
+  action: 'connect' | 'refresh' | 'request_access' | 'reconnect';
+  actionLabel: string;
+  updatedAt: string;
 }
 
 export interface SettingsPayload {
@@ -123,4 +126,32 @@ export interface SettingsPayload {
     label: string;
     value: string;
   }>;
+}
+
+export interface WorkspaceStats {
+  liveCampaigns: number;
+  creators: number;
+}
+
+export interface ClientProfile {
+  name: string;
+  region: string;
+  reportingWindow: string;
+  approvalSlaHours: number;
+  contentCadencePerWeek: number;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  timezone: string;
+  teamId: string;
+}
+
+export interface AiPreference {
+  label: string;
+  description: string;
+  enabled: boolean;
 }

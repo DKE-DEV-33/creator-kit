@@ -15,6 +15,10 @@ import type {
   CreatorAnalytics,
   CreatorProfile,
   SettingsPayload,
+  WorkspaceStats,
+  ClientProfile,
+  UserProfile,
+  AiPreference,
 } from './types';
 
 interface ApiConfig {
@@ -25,8 +29,14 @@ interface ApiConfig {
  * Resolve the API base URL from environment variables.
  */
 function getApiConfig(): ApiConfig {
+  if (typeof window === 'undefined') {
+    return {
+      baseUrl: process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000',
+    };
+  }
+
   return {
-    baseUrl: process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000',
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000',
   };
 }
 
@@ -99,6 +109,23 @@ export async function getCreator(id: string): Promise<CreatorDetail> {
 }
 
 /**
+ * Update a creator profile.
+ */
+export async function updateCreator(
+  id: string,
+  payload: { name: string; email?: string | null; platforms?: CreatorDetail['platforms'] }
+): Promise<CreatorDetail> {
+  const data = await fetchJson<{ creator: CreatorDetail }>(`/creators/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return data.creator;
+}
+
+/**
  * Fetch campaign analytics by ID.
  */
 export async function getCampaignAnalytics(id: string): Promise<CampaignAnalytics> {
@@ -112,6 +139,27 @@ export async function getCampaignAnalytics(id: string): Promise<CampaignAnalytic
 export async function getCreatorAnalytics(id: string): Promise<CreatorAnalytics> {
   const data = await fetchJson<{ analytics: CreatorAnalytics }>(`/analytics/creator/${id}`);
   return data.analytics;
+}
+
+/**
+ * Fetch content items for a creator.
+ */
+export async function getCreatorContent(id: string): Promise<ContentItem[]> {
+  const data = await fetchJson<{ content: ContentItem[] }>(`/creators/${id}/content`);
+  return data.content;
+}
+
+/**
+ * Send a creator update event.
+ */
+export async function sendCreatorUpdate(id: string, message?: string): Promise<void> {
+  await fetchJson(`/creators/${id}/updates`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }),
+  });
 }
 
 /**
@@ -179,6 +227,107 @@ export async function deleteCampaignTask(id: string, taskId: string): Promise<vo
 export async function getIntegrations(): Promise<Integration[]> {
   const data = await fetchJson<{ integrations: Integration[] }>('/integrations');
   return data.integrations;
+}
+
+/**
+ * Trigger an integration action (connect, refresh, request_access).
+ */
+export async function performIntegrationAction(
+  platform: Integration['platform'],
+  action: Integration['action']
+): Promise<Integration> {
+  const data = await fetchJson<{ integration: Integration }>(`/integrations/${platform}/action`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action }),
+  });
+  return data.integration;
+}
+
+/**
+ * Trigger a global integrations sync.
+ */
+export async function syncIntegrations(): Promise<{ status: string; updated: number }> {
+  const data = await fetchJson<{ status: string; updated: number }>(`/integrations/sync`, {
+    method: 'POST',
+  });
+  return data;
+}
+
+/**
+ * Fetch workspace stats for header summaries.
+ */
+export async function getWorkspaceStats(): Promise<WorkspaceStats> {
+  const data = await fetchJson<{ stats: WorkspaceStats }>('/stats');
+  return data.stats;
+}
+
+/**
+ * Fetch client profile data.
+ */
+export async function getClientProfile(): Promise<ClientProfile> {
+  const data = await fetchJson<{ profile: ClientProfile }>('/client-profile');
+  return data.profile;
+}
+
+/**
+ * Update client profile data.
+ */
+export async function updateClientProfile(payload: ClientProfile): Promise<ClientProfile> {
+  const data = await fetchJson<{ profile: ClientProfile }>('/client-profile', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return data.profile;
+}
+
+/**
+ * Fetch user profile data.
+ */
+export async function getUserProfile(): Promise<UserProfile> {
+  const data = await fetchJson<{ profile: UserProfile }>('/user-profile');
+  return data.profile;
+}
+
+/**
+ * Update user profile data.
+ */
+export async function updateUserProfile(payload: UserProfile): Promise<UserProfile> {
+  const data = await fetchJson<{ profile: UserProfile }>('/user-profile', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  return data.profile;
+}
+
+/**
+ * Fetch AI preferences.
+ */
+export async function getAiPreferences(): Promise<AiPreference[]> {
+  const data = await fetchJson<{ preferences: AiPreference[] }>('/ai-preferences');
+  return data.preferences;
+}
+
+/**
+ * Update AI preferences.
+ */
+export async function updateAiPreferences(preferences: AiPreference[]): Promise<AiPreference[]> {
+  const data = await fetchJson<{ preferences: AiPreference[] }>('/ai-preferences', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ preferences }),
+  });
+  return data.preferences;
 }
 
 /**

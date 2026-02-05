@@ -4,6 +4,11 @@
 CREATE TABLE teams (
   id UUID PRIMARY KEY,
   name TEXT NOT NULL,
+  region TEXT NOT NULL DEFAULT 'San Francisco, CA',
+  reporting_window TEXT NOT NULL DEFAULT 'Weekly',
+  approval_sla_hours INTEGER NOT NULL DEFAULT 48,
+  content_cadence_per_week INTEGER NOT NULL DEFAULT 2,
+  ai_preferences JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -34,6 +39,13 @@ CREATE TABLE platform_accounts (
   external_id TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (platform, external_id)
+);
+
+CREATE TABLE creator_updates (
+  id UUID PRIMARY KEY,
+  creator_id UUID NOT NULL REFERENCES creators(id) ON DELETE CASCADE,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TYPE campaign_status AS ENUM ('draft', 'active', 'reporting', 'archived');
@@ -100,7 +112,7 @@ CREATE TABLE kpi_snapshots (
   collected_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TYPE integration_status AS ENUM ('connected', 'disconnected', 'error');
+CREATE TYPE integration_status AS ENUM ('connected', 'disconnected', 'pending', 'error');
 
 CREATE TABLE integrations (
   id UUID PRIMARY KEY,

@@ -101,3 +101,51 @@ The system is structured so that:
 git clone https://github.com/your-username/creator-kit.git
 cd creator-kit
 npm install
+```
+
+### Environment Variables
+
+Copy the API environment template and update the database connection as needed:
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+### PostgreSQL (Docker)
+
+Start Postgres with Docker:
+
+```bash
+docker run --name creatorkit-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=creatorkit \
+  -p 5432:5432 \
+  -d postgres:16
+```
+
+Load schema + seed (using the container's psql):
+
+```bash
+docker exec -i creatorkit-postgres psql -U postgres -d creatorkit < packages/db/schema.sql
+docker exec -i creatorkit-postgres psql -U postgres -d creatorkit < packages/db/seed.sql
+```
+
+
+### Running the Apps
+
+Start the API server:
+
+```bash
+cd apps/api
+npm install
+npm run dev
+```
+
+Start the web app (in another terminal):
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```

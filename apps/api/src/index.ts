@@ -4,6 +4,7 @@
  * This file is intentionally small so the server can be constructed
  * and tested in isolation from the process startup.
  */
+import 'dotenv/config';
 import { buildServer } from './server.js';
 
 const server = await buildServer();

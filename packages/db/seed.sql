@@ -1,7 +1,8 @@
 -- Seed data for CreatorKit (PostgreSQL)
 
-INSERT INTO teams (id, name) VALUES
-  ('11111111-1111-1111-1111-111111111111', 'Pulse Creative');
+INSERT INTO teams (id, name, region, reporting_window, approval_sla_hours, content_cadence_per_week, ai_preferences) VALUES
+  ('11111111-1111-1111-1111-111111111111', 'Pulse Creative', 'San Francisco, CA', 'Weekly', 48, 2,
+   '[{"label":"Auto-generate brief drafts","description":"Create AI drafts when a campaign is created.","enabled":true},{"label":"Require approvals before publishing","description":"Block content from scheduling without a reviewer sign-off.","enabled":true},{"label":"Weekly performance digest","description":"Email summary to campaign owners every Monday at 9 AM.","enabled":false}]');
 
 INSERT INTO users (id, team_id, email, name) VALUES
   ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 'demo@pulsecreative.com', 'Jordan Lee');
