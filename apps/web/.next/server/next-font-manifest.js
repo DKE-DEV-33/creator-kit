@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{},\"appUsingSizeAdjust\":false,\"pagesUsingSizeAdjust\":false}"
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/dallaseaton/Desktop/Codex Projects/creator-kit/apps/web/app/layout\":[\"static/media/fa3e259cafa8f47e-s.p.woff2\",\"static/media/36966cca54120369-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

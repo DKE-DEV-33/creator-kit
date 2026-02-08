@@ -1,1 +1,7 @@
-{}
+{
+  "/integrations/page": "app/integrations/page.js",
+  "/campaigns/page": "app/campaigns/page.js",
+  "/creators/page": "app/creators/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js"
+}
